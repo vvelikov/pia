@@ -305,8 +305,11 @@ io.on('connection', function(socket) {
             vservoReset();
     });
 	// LEDs
-    socket.on('turnLEDs', function() {
+    socket.on('turnOff', function() {
 	    turnOff();
+    });
+    socket.on('turnOn', function() {
+	    turnOn();
     });
     // Stop speaking
     socket.on('saystop', function() {
