@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Pia Robot Controller</title>
+  <meta charset="utf-8"/>
+  <meta name="author" content="rage"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <!-- Include JQuery for interface -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui.min.css"/>
+  <!-- Include Bootstrap -->
+  <script src="js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css"/>
+  <!-- Use websockets to send user commands to server -->
+  <script src="js/socket.io.js"></script>
+  <!-- Use webrtc for video streaming -->
+  <script src="js/webrtc.js"></script>
+  <script src="js/interface.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <header>
+		<h3>
+        PIA Controller
+		</h3>
+    </header>
+    <section>
+      <div class="row">
+		 <div id="robot_control" class="col-md-4">  
+                 
+         <p align="center"><strong>Drive Power &nbsp;</strong><input id="pvalue" type="number" min="0" max="250"/></p>
+         <div id="pslider"></div>    
+		 	<br></br>
+		 <p align="center"><button id="move_forward" class="btn btn-primary">Forward</button></p>
+ 	   	 <p align="center"><button id="turn_left" class="btn btn-primary">Turn Left</button>
+         <button id="move_stop" class="btn btn-danger">Break</button>
+      	 <button id="turn_right" class="btn btn-primary">Turn Right</button></p>
+		 <p align="center"><button id="spin_left" class="btn btn-primary">Spin Left</button>
+		 <button id="spin_right" class="btn btn-primary">Spin Right</button>
+     	 <p align="center"><button id="move_reverse" class="btn btn-primary">Backward</button></p>
+     	 		 	<br></br>
+			 <p align="left"><label for="htitle">Left || Right</label>
+			 <input id="hvalue" type="number" min="30" max="150"/></p>
+            <div id="hslider"></div>
+            <p align="right"><div class="hslider-reset"><button type="button" id="hreset" class="btn btn-warning">Reset</button></p></div>
+
+					 	<br></br>
+            <p align="left"><label for="vtitle">Up || Down&nbsp; </label>
+     	 	<input id="vvalue" type="number" min="30" max="150"/></p>
+            <div id="vslider"></div>            <p align="right"><div class="vslider-reset"><button type="button" id="vreset" class="btn btn-warning">Reset</button></p></div>
+
+            
+			<div class="col-sm-6">
+			<strong>MotorSet</strong><div id="lastCmd" style="font-size:12px;"></div>
+			<strong>Distance</strong><div id="distance" style="font-size:12px;"></div>
+            <strong>Online</strong><div id="online" style="font-size:12px;"></div>
+            <strong>WiFi</strong><div id="wifi" style="font-size:12px;"></div>
+            <strong>CPU &#8451;</strong><div id="cpu_temp" style="font-size:12px;"></div>
+            </div>
+	<div class="col-sm-9">
+	   <h5><strong>Text 2 Say</h5></strong>
+	   <textarea style="overflow: hidden" rows="2" cols="15" id="text2speak" size="15"></textarea>
+       	<input type="button" class="btn btn-primary" id="submit" value="Say">
+       	<input type="button" class="btn btn-primary" id="submit" value="Stop">
+          </div>
+	     </p>
+	     <br></br>
+
+	     </div>
+	     
+	     <div id="container">
+            <div class="overlayWrapper">
+                <video id="remote-video" autoplay="" width="800" height="480">
+                    Your browser does not support the video tag.
+                </video>
+                <p class="overlay"></p>
+            </div>
+          </div>     
+          
+          <div id="controls">
+			  <p align="center">
+				  
+				  
+			<button id="start" class="btn btn-primary" onclick="start();">Start</button>
+            <button disabled id="stop" class="btn btn-danger" onclick="stop();">Stop</button>
+            <button type=button id="pause" class="btn btn-primary" onclick="pause();" title="pause or resume local player">Pause/Resume</button>
+            <button type=button id="mute" class="btn btn-primary" onclick="mute();" title="mute or unmute remote audio source">Mute/Unmute</button>
+            <button type=button id="fullscreen" class="btn btn-primary" onclick="fullscreen();">Fullscreen</button>
+            <button type=button id="record" class="btn btn-primary" onclick="start_stop_record();" title="start or stop recording audio/video">Start Recording</button>
+
+            <br></br>
+            <strong>LEDs</strong>	
+            <button type="button" id="turnOn" class="btn btn-success" onclick="turnOn()">On</button>
+            <button type="button" id="turnOff" class="btn btn-danger" onclick="turnOff()">Off</button>
+            <button type="button" id="blink" class="btn btn-warning" onclick="blink()">Blink</button>
+            <strong>Overlay</strong>
+            <button id="overlay_on" class="btn btn-success" onclick="overlayOn()">On</button>
+            <button id="overlay_off" class="btn btn-danger" onclick="overlayOff()">Off</button>
+           <strong>Face/Object</strong> 
+            <button id="face_detection_on" class="btn btn-success" onclick="face_detection_on()">On</button>
+            <button id="face_detection_off" class="btn btn-danger" onclick="face_detection_off()">Off</button>
+        </div></p>
+        
+        <div class="col-sm-7">
+            <div>
+				 
+                <span>Video:</span>
+                <span><input type="checkbox" onclick="remote_hw_vcodec_selection();"  id="remote_hw_vcodec" name="remote_hw_vcodec" value="remote_hw_vcodec" title="try to force the use of the hardware codec for both encoding and decoding if enabled and supported">force use of hardware codec for</span>
+                <select id="remote_vformat" name="remote_vformat" onclick="remote_hw_vcodec_format_selection();" title="available resolutions and frame rates at the min., max. and start configured bitrates for adaptive streaming which will be scaled from the base 720p 30fps">
+                    <option value="5">320x240 15 fps</option>
+                    <option value="10">320x240 30 fps</option>
+                    <option value="20">352x288 30 fps</option>
+                    <option value="25">640x480 15 fps</option>
+                    <option value="30">640x480 30 fps</option>
+                    <option value="35">800x480 30 fps</option>
+                    <option value="40">960x720 30 fps</option>
+                    <option value="50">1024x768 30 fps</option>
+                    <option value="55">1280x720 15 fps</option>
+                    <option value="60" selected="selected">1280x720 30 fps</option>
+                    <option value="63">1280x720 60 fps</option>
+                    <option value="65">1280x768 15 fps</option>
+                    <option value="70">1280x768 30 fps</option>
+                    <option value="80">1280x960 30 fps</option>
+                    <option value="90">1600x768 30 fps</option>
+                    <option value="95">1640x1232 15 fps</option>
+                    <option value="97">1640x1232 30 fps</option>
+                    <option value="100">1920x1080 15 fps</option>
+                    <option value="105">1920x1080 30 fps</option>
+                </select>
+            </div>
+        
+     
+     <div>
+            
+        </div><br>
+
+     
+ <!--           <b><span>Cast local Audio/Video sources to remote peer</span></b> -->
+            <div>
+				<span>Audio:</span>
+                <span><input type="checkbox" onclick="singleselection('audio_cast', 'cast_mic');" id="cast_mic" name="audio_cast" value="microphone">microphone/other input</span>
+                <span><input type="checkbox" id="echo_cancellation" name="audio_processing" title="disable any audio processing when casting music" checked>echo cancellation</span>
+                <!--label><input type="checkbox" onclick="singleselection('audio_cast', 'cast_tab');" id="cast_tab" name="audio_cast" value="system">tab</label-->
+            </div>
+            <div>
+                <span>Video:</span>
+                <span><input type="checkbox" onclick="singleselection('video_cast', 'cast_camera');" id="cast_camera" name="video_cast" value="camera">camera</span>
+                <span><input type="checkbox" onclick="singleselection('video_cast', 'cast_screen');" id="cast_screen" name="video_cast" value="screen">screen</span>
+                <span><input type="checkbox" onclick="singleselection('video_cast', 'cast_window');" id="cast_window" name="video_cast" value="screen">window</span>
+                <span><input type="checkbox" onclick="singleselection('video_cast', 'cast_application');" id="cast_application" name="video_cast" value="application">application</span>
+            </div>
+            <div>
+            </div>
+              		
+				<details>
+                <summary><b>Data Channels</b></summary>
+                <fieldset id="datachannels" disabled>
+                    <span>message: </span><input type="text" id="datamessage" value="" title="message to send to the remote peer"/>
+                    <button id="datasend" onclick="send_message();">Send</button>
+                    <span>received: </span><input type="text" readonly="readonly" id="datareceived" size="40" title="data received from the remote peer"/><br>
+                    <label><input type="checkbox" onclick="orientationsend_selection();" id="orientationsend" name="orientationsend" title="send device orientation angles when they change">send device orientation angles alpha, beta, gamma</label>
+                    <label><input type="checkbox" onclick="keypresssend_selection();" id="keypresssend" name="keypresssend" title="send keyboard events. Assume US layout. For users with virtual keyboard: put the focus on the 'message' input text item.">send key codes (US layout)</label>
+                    <label><input type="checkbox" onclick="alert('not implemented yet');" id="mousesend" name="mousesend" title="send mouse events">send mouse events</label>
+                </fieldset>
+				</details>
+		
+						<p style="text-align: center;">
+
+		<details id="record-detail">
+                <summary><b>Recorded Audio/Video stream</b></summary>
+                <div>
+                    <div class="overlayWrapper">
+                        <video id="recorded-video" controls>
+                            Your browser does not support the video tag.
+                        </video>
+                        <p class="overlay"></p>
+                    </div>
+                </div>
+                <div>
+                    <button type=button id="discard" onclick="discard_recording();" title="discard recorded audio/video">Discard</button>
+                    <button type=button id="download" onclick="download();" title="save recorded audio/video">Save as</button>
+                </div>
+            </details>
+		
+				
+        <div id="commands">
+            <details closed>
+                <summary><b>Advanced options</b></summary>
+                <fieldset>
+                    <span>Remote Peer/Signalling Server Address: </span><input required type="text" id="signalling_server" value="172.20.51.184:9000" title="<host>:<port>, default address is autodetected"/><br>
+                    <span>Optional ICE Servers (STUN/TURN): </span><input type="text" id="ice_servers" value="" title="array of RTCIceServer objects as valid JSON string"/><br>
+                    <span>Trickle ICE: </span>
+                    <select onclick="trickleice_selection();" id="trickleice" name="trickleice" title="enable trickle ice">
+                        <option value="auto">auto</option>
+                        <option value="true" selected="selected">true</option>
+                        <option value="false">false</option>
+                    </select>
+                </fieldset>
+            </details>
+              </div>
+                  </div>
+                  
+
+
+   </div>
+ </section>
+ <footer>
+  <div style="text-align:right"><strong> Pia&copy; 2018&nbsp;&nbsp;</div></strong>	
+ </footer> 
+</body>
+</html>

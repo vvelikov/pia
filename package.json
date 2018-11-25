@@ -1,0 +1,31 @@
+{
+  "name": "piarobot",
+  "version": "1.0.0",
+  "description": "web controller arduino robot",
+  "main": "app.js",
+  "scripts": {
+    "test": "node -c app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vvelikov/pia.git"
+  },
+  "keywords": [
+    "raspberry",
+    "pi",
+    "arduino",
+    "node.js",
+    "PCA9586",
+    "servo",
+    "dc",
+    "motor",
+    "ultrasonic",
+    "sensor"
+  ],
+  "author": "rage@rage-star.org",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vvelikov/pia/issues"
+  },
+  "homepage": "https://github.com/vvelikov/pia#readme"
+}
