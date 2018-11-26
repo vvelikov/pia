@@ -38,8 +38,8 @@
                     }
                     document.getElementById('cast_window').disabled = true;
                     document.getElementById('cast_application').disabled = true;
-                    document.getElementById('note2').style.display = "none";
-                    document.getElementById('note4').style.display = "none";
+                    //document.getElementById('note2').style.display = "none";
+                    //document.getElementById('note4').style.display = "none";
                 } else {
                     document.getElementById('note1').style.display = "none";
                     document.getElementById('note3').style.display = "none";

@@ -95,11 +95,6 @@ div.col-sm-9
     margin-left: 200px;
     margin-top: -80%;
 }
-# Video
-video {
-      background: #eee none repeat scroll 0 0;
-      border: 1px solid black;
-}
 div.vslider-reset
 {
     margin-left:    35px;
@@ -109,4 +104,33 @@ div.hslider-reset
 {
     margin-bottom:  10px;
     margin-left:    35px;
+}
+
+#container {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+}
+.controls {
+	text-align:	center;
+}
+.elements {
+	text-align:	center;
+}
+video {
+    background: #eee none repeat scroll 0 0;
+    border: 1px solid black
+}
+.overlayWrapper {
+    position: relative;
+    margin: 0 auto;
+}
+.overlayWrapper .overlay {
+    position: absolute;
+}
+p {
+    margin: 0.125em;
+}
+small {
+    font-size: smaller;
 }

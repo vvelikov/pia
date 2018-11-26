@@ -15,26 +15,26 @@ $(function(){
 //		console.log("from_server pw : " + data);
 		var power = JSON.parse(data).power;
 		$("#pslider").slider("pvalue", power)
-                $('#pvalue').val(power);
+        $('#pvalue').val(power);
 	});
 	//horizontal data from server
 	socket.on('emit_from_server_hw', function(data){
 //		console.log("from_server hw : " + data);
 		var power = JSON.parse(data).power;
 		$("#hslider").slider("hvalue", power)
-                $('#hvalue').val(power);
+        $('#hvalue').val(power);
 	});
 	//vertical data from server
 	socket.on('emit_from_server_vw', function(data){
 //		console.log("from_server vw : " + data);
 		var power = JSON.parse(data).power;
 		$("#vslider").slider("vvalue", power)
-                $('#vvalue').val(power);
+        $('#vvalue').val(power);
 	});
 	//motorSet from server
 	socket.on('motorSet', function(data){
 		$("#lastCmd").html("")
-                $('#lastCmd').append(data);
+        $('#lastCmd').append(data);
 	});
 	// distance
 	socket.on('proximity', function(data){
@@ -95,18 +95,21 @@ $(function(){
 	    socket.emit('motorSet',lastCmd);
     });
     $('#hreset').click(function(){
-                socket.emit('hreset');
+        socket.emit('hreset');
     });
     $('#vreset').click(function(){
-                socket.emit('vreset');
+        socket.emit('vreset');
     });
 
 // LED
-    $('#turnOn').click(function(){
-		socket.emit('turnOn');
+    $('#switchOn').click(function(){
+		socket.emit('switchOn');
     });
-    $('#turnOff').click(function(){
-		socket.emit('turnOff');
+    $('#blinkLED').click(function(){
+		socket.emit('blinkLED');
+	});    
+    $('#endBlink').click(function(){
+		socket.emit('endBlink');
     });
 // Overlay
 	$('#overlay_on').click(function(){
@@ -127,7 +130,7 @@ $(function(){
 	$("#pslider").slider({
 		range: "max",
 		min: 0,
-		max: 250,
+		max: 255,
 		value: 200,
 
 		//default
