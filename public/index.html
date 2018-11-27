@@ -88,9 +88,7 @@
             <output class="u-text-right"></output>
         </div>
 </div>
-</div>
-
-	
+</div>	
            </div>
            	<br></br>
         <p class="controls">
@@ -108,12 +106,17 @@
             <button id="show_overlay" class="btn btn-danger" onclick="overlayOff();">Off</button>
            <strong>Face/Object&nbsp;</strong> 
             <button id="face_detection" class="btn btn-success" onclick="FaceOn();">On</button>
-            <button id="face_follow" class="btn btn-danger" onclick="FaceOff();">Off</button></br>
+            <button id="face_follow" class="btn btn-danger" onclick="FaceOff();">Off</button>
+
+		<br></br>
 
         <div class="robot-controls">
         <details id="robot-controls">
-			
-   		 <summary><b>Robot Controls</b></summary></br>      
+   		 <summary><b>Robot Controls</b></summary>   
+		<p>
+		<input id="drive_power" value="200" min="0" max="255" type="number">
+		</p>
+        
          <p align="center"><button id="move_forward" class="btn btn-primary">Forward</button></p>
  	   	 <p align="center"><button id="turn_left" class="btn btn-primary">Turn Left</button>
          <button id="move_stop" class="btn btn-danger">Break</button>
@@ -124,6 +127,7 @@
      	 </div>
          </details>  
                <div>	    
+				  	   
         
         
         <div class="controls">
