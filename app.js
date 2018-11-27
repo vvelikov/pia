@@ -248,12 +248,12 @@ if (text2speak == null) {
 			speech.say(desired, function (err) {
 		    if (err) { return console.error(err) }
 		    console.log("[ - PIA - ] [ Text has been spoken ]" + "[" + desired + "]");
-		    res.end();	
-			});	
+		    res.end();
+			});
 		});
 	}
 });
-		
+
 // allow commands to be send via http call - GET only accepts command
 app.get('/command/', function (req, res) {
 res.send('command: ' + req.query.command);
@@ -272,7 +272,7 @@ io.on('connection', function(socket) {
 	setInterval(function(){
 		io.emit('motorSet', motorSet);
 	}, 2000);
-    console.log('[ - PIA - ] [ Connected clients:', numClients +']'); 
+    console.log('[ - PIA - ] [ Connected clients:', numClients +']');
     // button pushed
     socket.on('emit_from_client', function(data){
 		//console.log(data);
@@ -353,9 +353,8 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         numClients--;
         io.emit('stats', { numClients: numClients });
-        console.log('[ - PIA - ] [ Connected clients:', numClients +']'); 
+        console.log('[ - PIA - ] [ Connected clients:', numClients +']');
     });
-    
 // get WiFi Status
 function wifi() {
         var child_process = require('child_process');

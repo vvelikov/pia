@@ -33,6 +33,8 @@
     "express": "^4.16.4",
     "flite": "^0.1.2",
     "flite2": "0.0.6",
+    "jquery": "^3.3.1",
+    "rangeslider.js": "^2.3.2",
     "say": "^0.15.0",
     "socket.io": "^2.1.1"
   }
