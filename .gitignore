@@ -1,4 +1,5 @@
 .git
+.gitignore
 bkp/
 x.sh
 node_modules/
