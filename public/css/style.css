@@ -1,11 +1,16 @@
 body {
-	margin: 1px;
-//	font-family: sans-serif;
-    padding: 10px;
+    padding: 5px 0px;
+    margin: 0 auto;
+    max-width: 900px;
+}
+html {
+    color: #404040;
+    font-family: Helvetica, arial, sans-serif;
+    max-width: 900px;
 }
 .controls {
 	text-align:	center;
-	margin-left: -160px;
+	margin-left: -145px;
 }
 .leds {
 	text-align:	center;
@@ -21,7 +26,8 @@ body {
 video {
     background: #eee none repeat scroll 0 0;
     border: 1px solid black;
-    margin-top: 5px;
+    margin-top: -1%;
+    margin-left: 9%;
 }
 .overlayWrapper {
     position: relative;
@@ -40,71 +46,45 @@ div.others
 {
     text-align: center;
     position: absolute;
-    margin-bottom: 510px;
-    margin-right: 72%;
+    margin-top: 0px;
+    margin-right: 86%;
     right: 0;
     width: 140px;
     height: 180px;
-//    border: 1px solid black;
-} 
-// range slider
-*,
-*:before,
-*:after {
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
+  //  border: 1px solid black;
 }
-html {
-    color: #404040;
-    font-family: Helvetica, arial, sans-serif;
-}
-body {
-    padding: 5px 0px;
-    margin: 0 auto;
-    max-width: 800px;
-}
-output {
-    display: block;
+div.vvalue
+{
+	position: absolute;
+	left: 1%;
+	top: 67%;
+	display: block;
     font-size: 30px;
     font-weight: bold;
     text-align: center;
-    margin: 3px 0;
-    width: 100%;
 }
-.u-left {
-    float: right;
-    margin-top: -55%;
-    margin-right: 125px;
+div.hvalue
+{
+	position: absolute;
+	right: 178px;
+	margin-top: -4%;
+	display: block;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+	
 }
-.u-right {
-    float: right;
-    margin-top: -55%;
-    margin-right: 125px;
+div.hslidecontainer
+{
+    margin-left: 100px;
+    width: 165%;
+    margin-top: 0%;
 }
-.u-cf:before,
-.u-cf:after {
-    content: "";
-    display: table;
-}
-.u-cf:after {
-    clear: both;
-}
-.u-text-left {
-    display: inline;
-    text-align: right;
-    margin-left: -30px;
-    margin-top: -1px;
-    padding: 10px;
-}
-.u-text-right {
-    text-align: right;
-    margin-top: -30px;
-    margin-left: -45px;
-    padding: 10px;
-}
-.u-text-drive {
-    margin-left: 3px;
+div.vslidecontainer
+{
+	width: 35%;
+    height: 15px;
+    margin-top: 5px;
 }
 .btn {
   display: inline-block;

@@ -3,66 +3,66 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 var bodyParser = require('body-parser');
-var say = require('say');
+//var say = require('say');
 // pca9685
-var i2cBus = require("i2c-bus");
-var Pca9685Driver = require("pca9685").Pca9685Driver;
+//var i2cBus = require("i2c-bus");
+//var Pca9685Driver = require("pca9685").Pca9685Driver;
 var steeringChannel1 = 1; // servo on channel 0
 var steeringChannel2 = 0; // servo on channel 1
 var pwm;
 var motorSet = 'BREAK';
 
 // leds
-var GPIO = require('onoff').Gpio,
-    led1 = new GPIO(18,'out'),
-    led2 = new GPIO(24,'out');
+//var GPIO = require('onoff').Gpio,
+//    led1 = new GPIO(18,'out'),
+//    led2 = new GPIO(24,'out');
 
-var options = {
-    i2c: i2cBus.openSync(1),
-    address: 0x40,
-    frequency: 60,
-    debug: false
-};
+//var options = {
+//    i2c: i2cBus.openSync(1),
+//    address: 0x40,
+//    frequency: 60,
+//    debug: false
+//};
 
 // initialize PCA9685 and start loop once initialized
-pwm = new Pca9685Driver(options, function moveServo(err) {
-   if (err) {
-        console.log("[ - PIA - ] [ Error initializing PCA9685 ]");
-        process.exit(-1);
-    }
-    console.log("[ - PIA - ] [ PCA9685 Initialization done ]");
-});
+//pwm = new Pca9685Driver(options, function moveServo(err) {
+//   if (err) {
+//        console.log("[ - PIA - ] [ Error initializing PCA9685 ]");
+//        process.exit(-1);
+//    }
+//    console.log("[ - PIA - ] [ PCA9685 Initialization done ]");
+//});
 
 // Init Adruino board
-var five = require("johnny-five");
-var board = new five.Board({
-    repl: false,
-    debug: false
-});
+//var five = require("johnny-five");
+//var board = new five.Board({
+//    repl: false,
+//    debug: false
+//});
 
-var devices = {};
-	board.on("ready", function() {
-    	console.log("[ - PIA - ] [ Arduino Board ready ] ");
-devices.proximity = new five.Proximity({
-	controller: "HCSR04",
-	freq: "200",
-	pin: "A0"
-	});
-devices.M1 = new five.Motor({
- 	pins: { pwm: 11},
- 	register: { data: 8, clock: 4, latch: 12 },
- 	bits: { a: 2, b: 3 }
-	});
-devices.M4 = new five.Motor({
-  	pins: { pwm: 5},
-  	register: { data: 8, clock: 4, latch: 12 },
-  	bits: { a: 0, b: 6 }
-	});
-});
+//var devices = {};
+//	board.on("ready", function() {
+ //   	console.log("[ - PIA - ] [ Arduino Board ready ] ");
+//devices.proximity = new five.Proximity({
+//	controller: "HCSR04",
+//	freq: "200",
+//	pin: "A0"
+//	});
+//devices.M1 = new five.Motor({
+ //	pins: { pwm: 11},
+ //	register: { data: 8, clock: 4, latch: 12 },
+ //	bits: { a: 2, b: 3 }
+//	});
+//devices.M4 = new five.Motor({
+  //	pins: { pwm: 5},
+  //	register: { data: 8, clock: 4, latch: 12 },
+ // 	bits: { a: 0, b: 6 }
+//	});
+//});
 
 // functions
 function turnOff() {
-        console.log('[ - PIA - ] [ LEDs ] [ Off ]');
+    console.log('[ - PIA - ] [ LEDs ] [ Off ]');
 if (led1.readSync() === 1) { 	//check the pin state, if the state is 1 (or on)
     led1.writeSync(0); 				//set pin state to 1 (turn LED on)
     led2.writeSync(0);
@@ -73,7 +73,7 @@ if (led1.readSync() === 1) { 	//check the pin state, if the state is 1 (or on)
 }
 
 function turnOn() {
-        console.log('[ - PIA - ] [ LEDs ] [ On ]');
+    console.log('[ - PIA - ] [ LEDs ] [ On ]');
 if (led1.readSync() === 0) { 	//check the pin state, if the state is 0 (or off)
     led1.writeSync(1); 				//set pin state to 1 (turn LED on)
     led2.writeSync(1);
@@ -239,7 +239,7 @@ var desired = text2speak.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, 
         res.end();
         });
 } else {
-	console.log("[ - PIA - ] [ speak ] : [ empty input found ]");                                                                                                                                           
+	console.log("[ - PIA - ] [ speak ] : [ empty input found ]");
 	}
 });
 // allow commands to be send via http call - GET only accepts command
@@ -260,44 +260,27 @@ io.on('connection', function(socket) {
 	setInterval(function(){
 		io.emit('motorSet', motorSet);
 	}, 2000);
-    console.log('[ - PIA - ] [ Connected clients:', numClients +']'); 
+    console.log('[ - PIA - ] [ Connected clients:', numClients +']');
     // button pushed
     socket.on('emit_from_client', function(data){
-		//console.log(data);
 		var receive = JSON.stringify(data);
-//		console.log(receive);
+		console.log(receive);
 		processRobotCommand(receive);
 	});
-    // pslider change
-    socket.on('emit_from_client_pw', function(data){
-		var receive = JSON.stringify(data);
-                var p = JSON.parse(receive);
-                var speed = p.power;
-//		console.log("pslider: [" + receive + "]");
-		socket.broadcast.emit('emit_from_server_pw', receive);
-	});
-	// hslider change
-    socket.on('emit_from_client_hw', function(data){
-		var receive = JSON.stringify(data);
-                var p = JSON.parse(receive);
-                var pulse = p.power;
-//		console.log("hslider: [" + receive + "]");
-		//socket.broadcast.emit('emit_from_server_hw', receive);
-		//processRobotCommand(receive);
-   		//console.log(pulse);
-		hservoMove(pulse);
-	});
-// vslider change
-    socket.on('emit_from_client_vw', function(data){
-		var receive = JSON.stringify(data);
-                var p = JSON.parse(receive);
-                var pulse = p.power;
-		//console.log("vslider: [" + receive + "]");
-		//socket.broadcast.emit('emit_from_server_hw', receive);
-		//processRobotCommand(receive);
-   		//console.log(pulse);
-		vservoMove(pulse);
-	});
+    socket.on('emit_client_vslider', function(data){
+        var receive = JSON.stringify(data);
+        var p = JSON.parse(receive);
+        var pulse = p.power;
+        console.log("vslider: " + pulse);
+        //vservoMove(pulse);
+    });
+    socket.on('emit_client_hslider', function(data){
+        var receive = JSON.stringify(data);
+        var p = JSON.parse(receive);
+        var pulse = p.power;
+        console.log("hslider: " + pulse);
+        //hservoMove(pulse);
+    });
     socket.on('hreset', function(){
            hservoReset();
     });
@@ -310,10 +293,6 @@ io.on('connection', function(socket) {
     });
     socket.on('turnOn', function() {
 	    turnOn();
-    });
-    // Stop speaking
-    socket.on('saystop', function() {
-        say.stop();
     });
     // Face/Objekt Detection
     socket.on('face_detection_on', function() {
@@ -335,20 +314,19 @@ io.on('connection', function(socket) {
     });
 
 // read in sensor data, pass to browser
-    devices.proximity.on("data", function() {
-    socket.emit('proximity', { cm: this.cm.toFixed(1) });
-    dist = this.cm.toFixed(1);
-    if (( this.cm.toFixed(0) < 10) && (motorSet == 'MOVE FORWARD')) {
-       moveStop();
-       console.log('[ - Pia - ] [ TOO CLOSE ] ');
-	}
-    });
+//    devices.proximity.on("data", function() {
+ //   socket.emit('proximity', { cm: this.cm.toFixed(1) });
+  //  dist = this.cm.toFixed(1);
+   // if (( this.cm.toFixed(0) < 10) && (motorSet == 'MOVE FORWARD')) {
+    //   moveStop();
+     //  console.log('[ - Pia - ] [ TOO CLOSE ] ');
+//	}
+   // });
     socket.on('disconnect', function() {
         numClients--;
         io.emit('stats', { numClients: numClients });
-        console.log('[ - PIA - ] [ Connected clients:', numClients +']'); 
+        console.log('[ - PIA - ] [ Connected clients:', numClients +']');
     });
-    
 // get WiFi Status
 function wifi() {
         var child_process = require('child_process');

@@ -3,46 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="author" content="rage"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <link rel="stylesheet" href="css/style.css"/>
-<link rel="stylesheet" href="css/rangeslider.css">
+<link rel="stylesheet" href="css/styleslider.css"/>
  
+<script src="js/jquery.min.js"></script>
 <!-- Use websockets to send user commands to server -->
 <script src="js/socket.io.js"></script>
 <!-- Use webrtc for video streaming -->
 <script src="js/webrtc.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="js/jquery.min.js"></script>
-<script src="js/rangeslider.js"></script>
-<script src="js/slider.js"></script>
- 
+<script src="/socket.io/socket.io.js"></script> 
+<!-- Use webrtc for video streaming -->
+<script src="js/webrtc.js"></script>
+<script src="js/interface.js"></script>
+
+
         <title>Ria Robot Controller</title>
     </head>
     <body>
         <div id="container">
             <div class="overlayWrapper">
-				 <div class="u-left">
-        <div class="u-left" style="height: 200px"> -->
-            <input type="range" min="0" max="220" value="90" step="10" data-rangeslider data-orientation="vertical">
-       		<output class="u-text-left"></output>
-		</div>
 
-            </div>
-                <video id="remote-video" autoplay="" width="640" height="480">
+			<div class="vslidecontainer">
+				<input type="range" orient="vertical" min="500" max="2500" value="1500" step="100" class="slider" id="vslider">
+				<!-- <div class="vvalue">Value: <span id="vvalue"></span></div> -->
+				<div class="vvalue"><p><strong><span id="vvalue"></span></strong></p></div>
+			</div>
+			            
+             <video id="remote-video" autoplay="" width="640" height="480">
                     Your browser does not support the video tag.
                 </video>
-                <p class="overlay"></p>
-                  
-       <div>
-        <div>
-			<div class="u-right" style="height: 200px">
-            <input type="range" min="0" max="220" value="90" step="10" data-rangeslider>
-            <output class="u-text-right"></output>
-        </div>
-</div>
-</div>	
-           </div>
-           	<br></br>
+                <p class="overlay"></p>  
+                
+                
+<div class="hslidecontainer">
+  <input type="range" min="900" max="2500" value="1500" step="100" class="slider" id="hslider">
+  <div class="hvalue"><p><strong><span id="hvalue"></span></strong></p></div>
+</div> 
+
+  
+           
+           
+            <br></br>
+              	
         <p class="controls">
 			<button id="start" class="btn btn-primary" onclick="start();">Start</button>
             <button disabled id="stop" class="btn btn-danger" onclick="stop();">Stop</button>
@@ -79,7 +83,7 @@
         <details id="robot-controls">
    		 <summary><b>Robot Controls</b></summary>   
 		<p>
-		<input id="power_value" value="200" min="0" max="255" type="number">
+		<input id="power_value" value="200" min="0" max="255" type="number" style="width: 60px;"/>
 		</p>
         
          <p align="center"><button id="move_forward" class="btn btn-primary">Forward</button></p>
@@ -196,7 +200,6 @@
                 </fieldset-->
             </details>
         </div><br>
-        </div>
-    </script>   
+        </div>  	
     </body>
 </html>
