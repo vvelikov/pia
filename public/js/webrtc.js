@@ -104,36 +104,10 @@
                         pc.onaddstream = onRemoteStreamAdded; // deprecated
                     }
                     pc.onremovestream = onRemoteStreamRemoved;
-                    pc.ondatachannel = onDataChannel;
                     console.log("peer connection successfully created!");
                 } catch (e) {
                     console.error("createPeerConnection() failed");
                 }
-            }
-
-            function onDataChannel(event) {
-                console.log("onDataChannel()");
-                datachannel = event.channel;
-
-                event.channel.onopen = function () {
-                    console.log("Data Channel is open!");
-                    document.getElementById('datachannels').disabled = false;
-                };
-
-                event.channel.onerror = function (error) {
-                    console.error("Data Channel Error:", error);
-                };
-
-                event.channel.onmessage = function (event) {
-                    console.log("Got Data Channel Message:", event.data);
-                    document.getElementById('datareceived').value = event.data;
-                };
-
-                event.channel.onclose = function () {
-                    datachannel = null;
-                    document.getElementById('datachannels').disabled = true;
-                    console.log("The Data Channel is Closed");
-                };
             }
 
             function onIceCandidate(event) {
@@ -679,32 +653,6 @@
                  unselect_remote_hw_vcodec();
                  }
                  */
-            }
-
-            function send_message() {
-                var msg = document.getElementById('datamessage').value;
-                datachannel.send(msg);
-                console.log("message sent: ", msg);
-            }
-
-            function create_localdatachannel() {
-                if (pc && localdatachannel)
-                    return;
-                localdatachannel = pc.createDataChannel('datachannel');
-                localdatachannel.onopen = function(event) {
-                    if (localdatachannel.readyState === "open") {
-                        localdatachannel.send("datachannel created!");
-                    }
-                };
-                console.log("data channel created");
-            }
-
-            function close_localdatachannel() {
-                if (localdatachannel) {
-                    localdatachannel.close();
-                    localdatachannel = null;
-                }
-                console.log("local data channel closed");
             }
 
             function handleOrientation(event) {

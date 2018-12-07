@@ -3,81 +3,85 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 var bodyParser = require('body-parser');
-//var say = require('say');
+var flite = require('flite')
+var motorSet = 'BREAK';
+
+/*
 // pca9685
-//var i2cBus = require("i2c-bus");
-//var Pca9685Driver = require("pca9685").Pca9685Driver;
+var i2cBus = require("i2c-bus");
+var Pca9685Driver = require("pca9685").Pca9685Driver;
 var steeringChannel1 = 1; // servo on channel 0
 var steeringChannel2 = 0; // servo on channel 1
 var pwm;
-var motorSet = 'BREAK';
 
 // leds
-//var GPIO = require('onoff').Gpio,
-//    led1 = new GPIO(18,'out'),
-//    led2 = new GPIO(24,'out');
+var GPIO = require('onoff').Gpio,
+    led1 = new GPIO(18,'out'),
+    led2 = new GPIO(24,'out');
 
-//var options = {
-//    i2c: i2cBus.openSync(1),
-//    address: 0x40,
-//    frequency: 60,
-//    debug: false
-//};
+var options = {
+    i2c: i2cBus.openSync(1),
+    address: 0x40,
+    frequency: 60,
+    debug: false
+};
 
 // initialize PCA9685 and start loop once initialized
-//pwm = new Pca9685Driver(options, function moveServo(err) {
-//   if (err) {
-//        console.log("[ - PIA - ] [ Error initializing PCA9685 ]");
-//        process.exit(-1);
-//    }
-//    console.log("[ - PIA - ] [ PCA9685 Initialization done ]");
-//});
+pwm = new Pca9685Driver(options, function moveServo(err) {
+   if (err) {
+        console.log("[ - PIA - ] [ Error initializing PCA9685 ]");
+        process.exit(-1);
+    }
+    console.log("[ - PIA - ] [ PCA9685 Initialization done ]");
+});
 
 // Init Adruino board
-//var five = require("johnny-five");
-//var board = new five.Board({
-//    repl: false,
-//    debug: false
-//});
+var five = require("johnny-five");
+var board = new five.Board({
+    repl: false,
+    debug: false
+});
 
-//var devices = {};
-//	board.on("ready", function() {
- //   	console.log("[ - PIA - ] [ Arduino Board ready ] ");
-//devices.proximity = new five.Proximity({
-//	controller: "HCSR04",
-//	freq: "200",
-//	pin: "A0"
-//	});
-//devices.M1 = new five.Motor({
- //	pins: { pwm: 11},
- //	register: { data: 8, clock: 4, latch: 12 },
- //	bits: { a: 2, b: 3 }
-//	});
-//devices.M4 = new five.Motor({
-  //	pins: { pwm: 5},
-  //	register: { data: 8, clock: 4, latch: 12 },
- // 	bits: { a: 0, b: 6 }
-//	});
-//});
+var devices = {};
+	board.on("ready", function() {
+        console.log("[ - PIA - ] [ Arduino Board ready ] ");
+devices.proximity = new five.Proximity({
+	controller: "HCSR04",
+	freq: "200",
+	pin: "A0"
+	});
+devices.M1 = new five.Motor({
+ 	pins: { pwm: 11},
+ 	register: { data: 8, clock: 4, latch: 12 },
+ 	bits: { a: 2, b: 3 }
+	});
+devices.M4 = new five.Motor({
+  	pins: { pwm: 5},
+  	register: { data: 8, clock: 4, latch: 12 },
+  	bits: { a: 0, b: 6 }
+	});
+});
 
 // functions
 function turnOff() {
-    console.log('[ - PIA - ] [ LEDs ] [ Off ]');
 if (led1.readSync() === 1) { 	//check the pin state, if the state is 1 (or on)
+    console.log('[ - PIA - ] [ LEDs ] [ Off ]');
     led1.writeSync(0); 				//set pin state to 1 (turn LED on)
     led2.writeSync(0);
 } else {
+    console.log('[ - PIA - ] [ LEDs ] [ On ]');
     led1.writeSync(1); 				//set pin state to 1 (turn LED on)
     led2.writeSync(1);
   }
 }
 
 function turnOn() {
-    console.log('[ - PIA - ] [ LEDs ] [ On ]');
 if (led1.readSync() === 0) { 	//check the pin state, if the state is 0 (or off)
+    console.log('[ - PIA - ] [ LEDs ] [ On ]');
     led1.writeSync(1); 				//set pin state to 1 (turn LED on)
     led2.writeSync(1);
 } else {
+    console.log('[ - PIA - ] [ LEDs ] [ Off ]');
     led1.writeSync(0); 				//set pin state to 0 (turn LED off)
     led2.writeSync(0);
   }
@@ -91,16 +95,18 @@ function vservoReset() {
     console.log("[ - PIA - ] [ VServo Reset]");
     pwm.setPulseLength(steeringChannel2, 1500);
 }
-function hservoMove(pulse) {
-    if (pulse == null) {
+function hservoMove(hpulse) {
+    var pulse = parseInt(hpulse, 10);
+    if (hpulse == null) {
      console.log("[ - PIA - ] [ HServo Move] [pulse undefined]");
     } else {
     console.log("[ - PIA - ] [ HServo Move]" + " " + "[" + pulse + "]");
     pwm.setPulseLength(steeringChannel1, pulse);
     }
 }
-function vservoMove(pulse) {
-    if (pulse == null) {
+function vservoMove(vpulse) {
+    var pulse = parseInt(vpulse, 10);
+    if (vpulse == null) {
      console.log("[ - PIA - ] [ VServo Move] [pulse undefined]");
     } else {
      console.log("[ - PIA - ] [ VServo Move]" + " " + "[" + pulse  + "]");
@@ -136,44 +142,50 @@ function moveStop() {
     devices.M4.stop();
 }
 function moveForward(speed) {
+    var p = parseInt(speed, 10);
     if (( dist < 15) && (motorSet == 'MOVE FORWARD')) {
        moveStop();
        console.log('[ - PIA - ] [ TOO CLOSE ] ');
     } else {
-    	console.log("[ - PIA - ] [ Move Forward ]" + " " + "[" + speed + "]");
+    	console.log("[ - PIA - ] [ Move Forward ]" + " " + "[" + p + "]");
     	motorSet = 'MOVE FORWARD';
-    	devices.M1.rev(speed);
-    	devices.M4.rev(speed);
+    	devices.M1.rev(p);
+    	devices.M4.rev(p);
 	}
 }
 function moveReverse(speed) {
-    console.log("[ - PIA - ] [ Move Reverse ]" + " " + "[" + speed + "]");
+    var p = parseInt(speed, 10);
+    console.log("[ - PIA - ] [ Move Reverse ]" + " " + "[" + p + "]");
     motorSet = 'MOVE REVERSE';
-    devices.M1.fwd(speed);
-    devices.M4.fwd(speed);
+    devices.M1.fwd(p);
+    devices.M4.fwd(p);
 }
 function turnLeft(speed) {
-    console.log("[ - PIA - ] [ Turn Left ]" + " " + "[" + speed + "]");
+    var p = parseInt(speed, 10);
+    console.log("[ - PIA - ] [ Turn Left ]" + " " + "[" + p + "]");
     motorSet = 'TURN LEFT';
-    devices.M1.fwd(speed);
-    devices.M4.rev(speed / 2);
+    devices.M1.fwd(p);
+    devices.M4.rev(p / 2);
 }
 function turnRight(speed) {
-    console.log("[ - PIA - ] [ Turn Right ]" + " " + "[" + speed + "]");
+    var p = parseInt(speed, 10);
+    console.log("[ - PIA - ] [ Turn Right ]" + " " + "[" + p + "]");
     motorSet = 'TURN RIGHT';
-    devices.M1.rev(speed / 2);
-    devices.M4.fwd(speed);
+    devices.M1.rev(p / 2);
+    devices.M4.fwd(p);
 }
 function spinLeft(speed) {
-    console.log("[ - PIA - ] [ Spin Left ]" + " " + "[" + speed + "]");
+    var p = parseInt(speed, 10);
+    console.log("[ - PIA - ] [ Spin Left ]" + " " + "[" + p + "]");
     motorSet = 'SPIN LEFT';
-    devices.M1.fwd(speed);
+    devices.M1.fwd(p);
     devices.M4.stop();
 }
 function spinRight(speed) {
-    console.log("[ - PIA - ] [ Spin Right ]" + " " + "[" + speed + "]");
+    var p = parseInt(speed, 10);
+    console.log("[ - PIA - ] [ Spin Right ]" + " " + "[" + p + "]");
     motorSet = 'SPIN RIGHT';
-    devices.M4.fwd(speed);
+    devices.M4.fwd(p);
     devices.M1.stop();
 }
 
@@ -203,7 +215,7 @@ function processRobotCommand (received) {
   }
 }
 
-
+*/
 // Initialize express and server
 var express = require('express'),
 	app = express(),
@@ -227,21 +239,23 @@ app.get('/', function (req, res) {
 
 app.post('/text2speak', function(req,res) {
 var text2speak = req.body.text2speak;
-// empty string?
-if (text2speak) {
 var desired = text2speak.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-	//console.log("[ - PIA - ] [ Saying ]" + "[" + desired + "]");
-	say.speak(desired, (err) => {
-            if (err) {
-                return console.error(err);
-            }
-	    console.log("[ - PIA - ] [ Text has been spoken ]" + "[" + desired + "]");
-        res.end();
-        });
-} else {
+
+// empty string?
+if (text2speak == null) {
 	console.log("[ - PIA - ] [ speak ] : [ empty input found ]");
+} else {
+	flite(function (err, speech) {
+		if (err) { return console.error(err) }
+			speech.say(desired, function (err) {
+		    if (err) { return console.error(err) }
+		    console.log("[ - PIA - ] [ Text spoken ]" + "[" + " " + desired + " " + "]");
+		    res.end();	
+			});	
+		});
 	}
 });
+
 // allow commands to be send via http call - GET only accepts command
 app.get('/command/', function (req, res) {
 res.send('command: ' + req.query.command);
@@ -264,30 +278,22 @@ io.on('connection', function(socket) {
     // button pushed
     socket.on('emit_from_client', function(data){
 		var receive = JSON.stringify(data);
-		console.log(receive);
+		//console.log(receive);
 		processRobotCommand(receive);
 	});
     socket.on('emit_client_vslider', function(data){
         var receive = JSON.stringify(data);
-        var p = JSON.parse(receive);
-        var pulse = p.power;
-        console.log("vslider: " + pulse);
-        //vservoMove(pulse);
+        var v = JSON.parse(receive);
+        var vpulse = v.power;
+        vservoMove(vpulse);
     });
     socket.on('emit_client_hslider', function(data){
         var receive = JSON.stringify(data);
-        var p = JSON.parse(receive);
-        var pulse = p.power;
-        console.log("hslider: " + pulse);
-        //hservoMove(pulse);
+        var h = JSON.parse(receive);
+        var hpulse = h.power;
+        hservoMove(hpulse);
     });
-    socket.on('hreset', function(){
-           hservoReset();
-    });
-    socket.on('vreset', function(){
-            vservoReset();
-    });
-	// LEDs
+    // LEDs
     socket.on('turnOff', function() {
 	    turnOff();
     });
@@ -313,20 +319,17 @@ io.on('connection', function(socket) {
         overlayOff();
     });
 
+/*
 // read in sensor data, pass to browser
-//    devices.proximity.on("data", function() {
- //   socket.emit('proximity', { cm: this.cm.toFixed(1) });
-  //  dist = this.cm.toFixed(1);
-   // if (( this.cm.toFixed(0) < 10) && (motorSet == 'MOVE FORWARD')) {
-    //   moveStop();
-     //  console.log('[ - Pia - ] [ TOO CLOSE ] ');
-//	}
-   // });
+    devices.proximity.on("data", function() {
+    socket.emit('proximity', { cm: this.cm.toFixed(1) });
+    });
     socket.on('disconnect', function() {
         numClients--;
         io.emit('stats', { numClients: numClients });
         console.log('[ - PIA - ] [ Connected clients:', numClients +']');
     });
+    */
 // get WiFi Status
 function wifi() {
         var child_process = require('child_process');
